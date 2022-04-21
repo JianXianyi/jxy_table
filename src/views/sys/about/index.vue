@@ -1,98 +1,106 @@
 <template>
-  <PageWrapper title="关于">
-    <template #headerContent>
-      <div class="flex justify-between items-center">
-        <span class="flex-1">
-          <a :href="GITHUB_URL" target="_blank">{{ name }}</a>
-          是一个基于Vue3.0、Vite、 Ant-Design-Vue 、TypeScript
-          的后台解决方案，目标是为中大型项目开发,提供现成的开箱解决方案及丰富的示例,原则上不会限制任何代码用于商用。
-        </span>
-      </div>
-    </template>
-    <Description @register="infoRegister" class="enter-y" />
-    <Description @register="register" class="my-4 enter-y" />
-    <Description @register="registerDev" class="enter-y" />
-  </PageWrapper>
+  <div class="p-2">
+    <Voucher :voucher="dataSource" />
+    <!-- <BasicTable
+      @register="registerTable"
+      :bordered="border"
+      @edit-end="handleEditEnd"
+      @edit-cancel="handleEditCancel"
+      :beforeEditSubmit="beforeEditSubmit"
+    /> -->
+  </div>
 </template>
-<script lang="ts" setup>
-  import { h } from 'vue';
-  import { Tag } from 'ant-design-vue';
-  import { PageWrapper } from '/@/components/Page';
-  import { Description, DescItem, useDescription } from '/@/components/Description/index';
-  import { GITHUB_URL, SITE_URL, DOC_URL } from '/@/settings/siteSetting';
+<script lang="ts">
+  import { defineComponent } from 'vue';
+  import { BasicTable, useTable } from '/@/components/Table';
+  import { getMultipleHeaderColumns } from './tableData';
+  import Voucher from '/@/views/voucher/index.vue';
 
-  const { pkg, lastBuildTime } = __APP_INFO__;
-
-  const { dependencies, devDependencies, name, version } = pkg;
-
-  const schema: DescItem[] = [];
-  const devSchema: DescItem[] = [];
-
-  const commonTagRender = (color: string) => (curVal) => h(Tag, { color }, () => curVal);
-  const commonLinkRender = (text: string) => (href) => h('a', { href, target: '_blank' }, text);
-
-  const infoSchema: DescItem[] = [
+  const dataList = [
     {
-      label: '版本',
-      field: 'version',
-      render: commonTagRender('blue'),
+      id: 1,
+      desc: '工资',
+      name: '暂无',
+      p1: 1,
+      p2: 2,
+      p3: 3,
+      p4: 5,
+      p5: 9,
+      p6: 7,
+      p7: 0,
+      p8: 1,
     },
-    {
-      label: '最后编译时间',
-      field: 'lastBuildTime',
-      render: commonTagRender('blue'),
-    },
-    {
-      label: '文档地址',
-      field: 'doc',
-      render: commonLinkRender('文档地址'),
-    },
-    {
-      label: '预览地址',
-      field: 'preview',
-      render: commonLinkRender('预览地址'),
-    },
-    {
-      label: 'Github',
-      field: 'github',
-      render: commonLinkRender('Github'),
-    },
+    { id: 2, desc: '报销', name: '暂无', b1: 1, b2: 2, b3: 3, b4: 5, b5: 9, b6: 7, b7: 0, b8: 1 },
+    { id: 3, desc: '工资', name: '暂无', p1: 1, p2: 2, p3: 3, p4: 5, p5: 9, p6: 7, p7: 0, p8: 1 },
   ];
 
-  const infoData = {
-    version,
-    lastBuildTime,
-    doc: DOC_URL,
-    preview: SITE_URL,
-    github: GITHUB_URL,
-  };
+  export default defineComponent({
+    components: { BasicTable, Voucher },
+    setup() {
+      const [registerTable] = useTable({
+        dataSource: dataList,
+        columns: getMultipleHeaderColumns(),
+        bordered: true,
+        summaryFunc: handleSummary,
+      });
+      const dataSource = {
+        numberId: 100010,
+        total: 2239281123,
+        items: [
+          {
+            id: 10,
+            summart: '工资',
+            subject: '科目一',
+            debite: 2239281123,
+            credit: 846545,
+          },
+          { id: 10, summart: '工资', subject: '科目二', debite: 2051.23, credit: 5856456 },
+          { id: 10, summart: '工资', subject: '科目三', debite: 12659181, credit: 2312.31 },
+        ],
+        bookkeeper: 'HarleyQ',
+      };
+      function handleSummary(tableData: Recordable[]) {
+        const totalNo = tableData.reduce((prev, next) => {
+          prev += next.no;
+          return prev;
+        }, 0);
+        return [
+          {
+            _row: '合计',
+            _index: '平均值',
+            no: totalNo,
+          },
+        ];
+      }
+      function handleEditEnd({ record, index, key, value }: Recordable) {
+        console.log(record, index, key, value);
+        return false;
+      }
+      async function beforeEditSubmit({ record, index, key, value }) {
+        console.log('单元格数据正在准备提交', { record, index, key, value });
+        // return await feakSave({ id: record.id, key, value });
+      }
 
-  Object.keys(dependencies).forEach((key) => {
-    schema.push({ field: key, label: key });
-  });
-
-  Object.keys(devDependencies).forEach((key) => {
-    devSchema.push({ field: key, label: key });
-  });
-
-  const [register] = useDescription({
-    title: '生产环境依赖',
-    data: dependencies,
-    schema: schema,
-    column: 3,
-  });
-
-  const [registerDev] = useDescription({
-    title: '开发环境依赖',
-    data: devDependencies,
-    schema: devSchema,
-    column: 3,
-  });
-
-  const [infoRegister] = useDescription({
-    title: '项目信息',
-    data: infoData,
-    schema: infoSchema,
-    column: 2,
+      function handleEditCancel() {
+        console.log('cancel');
+      }
+      return {
+        registerTable,
+        handleEditEnd,
+        handleEditCancel,
+        beforeEditSubmit,
+        handleSummary,
+        dataSource,
+      };
+    },
   });
 </script>
+<style scoped>
+  :deep(.ant-table-fixed-header .ant-table-scroll .ant-table-header) {
+    margin-bottom: -20px;
+    padding-bottom: 20px;
+    overflow: scroll;
+    /* border: 1px solid; */
+    background-color: pink;
+  }
+</style>
