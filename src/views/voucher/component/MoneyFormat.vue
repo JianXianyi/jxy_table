@@ -14,7 +14,7 @@
       <input
         type="text"
         maxlength="13"
-        style="height: 40px; width: 192px"
+        style="height: 37px; width: 192px"
         @keyup.enter="splitNum"
         v-model="num1"
         name=""

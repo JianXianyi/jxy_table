@@ -101,9 +101,11 @@
               <money-format :number="item.debite" :rowIndex="index" @modified="modifiedDebite" />
             </td>
             <td class="voucher_credit">
-              <tr class="unit">
-                <money-format :number="item.credit" :rowIndex="index" @modified="modifiedCredit"
-              /></tr> </td
+              <money-format
+                :number="item.credit"
+                :rowIndex="index"
+                @modified="modifiedCredit"
+              /> </td
           ></tr>
         </tbody>
         <tfoot>
@@ -268,6 +270,9 @@
     /* justify-content: space-between; */
   }
   thead {
+    color: steelblue;
+    font-weight: bold;
+
     background-color: aliceblue;
   }
   .voucher_header_title {
@@ -282,7 +287,7 @@
     margin-left: 10px;
   }
   .voucher_table td {
-    border: 1px solid #ddd;
+    border: rgb(174, 201, 224) 1px solid;
   }
   .voucher_header_input {
     position: absolute;
@@ -375,5 +380,7 @@
   /* 表尾样式 */
   tfoot {
     background-color: aliceblue;
+    color: steelblue;
+    font-weight: bold;
   }
 </style>
