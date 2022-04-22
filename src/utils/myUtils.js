@@ -2,7 +2,7 @@
 function dotClear(str) {
   return str.replace('.', '');
 }
-//补0操作
+//补空格操作
 function zero(arr) {
   if (arr.length < 13) {
     let length = arr.length;
@@ -110,6 +110,7 @@ function date() {
 
   return `${yy}-${mm}-${dd}`;
 }
+//数字补0操作
 function foo(num) {
   return num < 10 ? '0' + num : num;
 }

@@ -2,11 +2,10 @@
   <div class="voucher-container">
     <div class="voucher_header">
       <div class="voucher_header_title">记账凭证</div>
-      <div class="voucher_header_number">单据号: {{ voucher.numberId }}</div>
       <div class="voucher_header_input">
-        <a-button type="default" class="my-4 btn"> 上传附件 </a-button>
+        <a-button type="default" class="my-4 btn" @click="test"> 上传附件 </a-button>
         <a-button type="default" class="my-4 btn"> 搜索凭证 </a-button>
-        <a-button type="primary" class="my-4 btn"> 打印凭证 </a-button>
+        <a-button type="primary" class="my-4 btn" @click="printTable"> 打印凭证 </a-button>
       </div>
     </div>
     <div class="voucher_search">
@@ -19,7 +18,7 @@
         附单据：<input type="text" style="width: 30px" name="" value="1" id="" />张
       </div>
     </div>
-    <div class="voucher_body">
+    <div class="voucher_body" id="printTable">
       <table class="voucher_table">
         <thead>
           <tr>
@@ -27,11 +26,9 @@
             <td style="width: 300px" class="voucher_summary">摘要</td>
             <td style="width: 300px" class="voucher_subject">会计科目</td>
             <td class="voucher_price_01" style="height: 100%; width: 192px">
-              <tr
-                ><td style="text-align: center" colspan="13"
-                  ><strong class="voucher_title">借方金额</strong></td
-                ></tr
-              >
+              <tr>
+                <strong class="voucher_title">借方金额</strong>
+              </tr>
               <tr class="unit" style="font-size: 12px">
                 <td>百</td>
                 <td>十</td>
@@ -49,11 +46,7 @@
               </tr>
             </td>
             <td class="voucher_price_01" style="height: 100%; width: 192px">
-              <tr
-                ><td style="text-align: center" colspan="13"
-                  ><strong class="voucher_title">贷方金额</strong></td
-                ></tr
-              >
+              <tr><strong class="voucher_title">贷方金额</strong></tr>
               <tr class="unit" style="font-size: 12px">
                 <td>百</td>
                 <td>十</td>
@@ -80,10 +73,21 @@
               contenteditable="true"
               ref="summart"
               @keyup.enter="saveSummart(index)"
-              >{{ item.summart }}</td
             >
+              <input
+                style="width: 100%; height: 40px"
+                type="text"
+                multiple="multiple"
+                v-model="voucherData.items[index].summart"
+              />
+            </td>
             <td class="voucher_subject_val tab-value">
-              <input list="subject" id="subject_inp" :value="item.subject" />
+              <input
+                list="subject"
+                id="subject_inp"
+                @change="Changesubject($event, index)"
+                :value="item.subject"
+              />
               <datalist id="subject">
                 <option
                   v-for="(item_01, index_01) in subjectOption"
@@ -94,9 +98,7 @@
               </datalist>
             </td>
             <td class="voucher_debite">
-              <tr class="unit"
-                ><money-format :number="item.debite" :rowIndex="index" @modified="modifiedDebite"
-              /></tr>
+              <money-format :number="item.debite" :rowIndex="index" @modified="modifiedDebite" />
             </td>
             <td class="voucher_credit">
               <tr class="unit">
@@ -124,16 +126,20 @@
           </tr>
         </tfoot>
       </table>
+      <div class="table-footer">
+        <div class="voucher_bookkeeper">制单人:{{ voucher.bookkeeper }}</div>
+        <div class="voucher_header_number">单据号: {{ voucher.numberId }}</div>
+      </div>
     </div>
-    <div class="voucher_footer">
-      <div class="voucher_bookkeeper">制单人:{{ voucher.bookkeeper }}</div>
+    <!-- <div class="voucher_footer">
       <a-button type="primary" class="my-4 saveAll" @click="saveAll"> 保存 </a-button>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
   import MoneyFormat from '/@/views/voucher/component/MoneyFormat.vue';
+  import print from 'print-js';
 
   import Utils from '/@/utils/myUtils';
 
@@ -197,10 +203,28 @@
         return Utils.convertCurrency(this.debiteNum + this.creditNum);
       },
     },
+    mounted() {
+      // console.log(Utils.date());
+    },
     methods: {
       // nonConcat() {
       //   this.$emit('nonConcat');
       // },
+      printTable() {
+        print({
+          printable: 'printTable',
+          type: 'html',
+          header: ' 生成凭证 ',
+          targetStyle: ['*'],
+          targetStyles: ['*'],
+          style: '@page {size:small ;margin:0 5mm}',
+        });
+      },
+      Changesubject(e, index) {
+        const subjectName = e.target.value;
+        this.voucherData.items[index].subject = subjectName;
+        // console.log(e.target.value, index);
+      },
       modifiedDebite(num, index) {
         //修改借款金额后的自定义事件
         // console.log(num, index);
@@ -219,9 +243,6 @@
         console.log(index);
       },
     },
-    mounted() {
-      console.log(Utils.date());
-    },
   };
 </script>
 
@@ -229,13 +250,16 @@
   .voucher-container {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background-color: #fff;
   }
   .voucher_table {
     text-align: center;
-    /* width: 90%; */
-    margin: auto;
-    overflow: auto;
+    /* margin: auto;
+    overflow: auto; */
   }
   .voucher_header {
     width: 100%;
@@ -252,12 +276,7 @@
     font-size: 24px;
     font-weight: bold;
   }
-  .voucher_header_number {
-    line-height: 44px;
-    margin-left: 30px;
-    margin-top: 10px;
-    font-size: 14px;
-  }
+
   .btn {
     margin-top: 10px;
     margin-left: 10px;
@@ -270,26 +289,26 @@
     top: 10px;
     right: 10px;
   }
+  /* 科目下拉框样式 */
   #subject_inp {
     width: 100%;
     height: 40px;
   }
-  .voucher_debite .unit,
-  .voucher_credit .unit {
-    display: flex;
-    justify-content: flex-end;
-  }
+  /* 金额单元格样式 */
   .unit {
-    /* display: flex; */
+    display: flex;
   }
   .unit td {
-    /* flex: 1; */
+    flex: 1;
     width: 15px;
+    padding-top: 8px;
     height: 40px;
   }
 
+  /* 输入框组样式 */
   .voucher_search {
     position: relative;
+    width: 80%;
     margin: 10px;
     margin-left: 20px;
   }
@@ -303,12 +322,9 @@
     right: 0;
   }
 
-  .voucher_footer {
-    margin-left: 40px;
-    margin-top: 10px;
-  }
+  /* 合计样式 */
   .voucher_sum {
-    height: 50px;
+    /* height: 50px; */
   }
 
   /* .voucher_price_01 {
@@ -318,24 +334,45 @@
   .voucher_subject,
   .voucher_title,
   .voucher_title {
-    font-size: 14px;
+    font-size: 12px;
+    margin-left: 66px;
     font-weight: bold;
   }
 
+  /* 保存按钮样式 */
   .saveAll {
     display: inline-block;
     position: absolute;
     right: 20px;
     top: 0px;
   }
-  .voucher_bookkeeper {
-    display: inline-block;
-    line-height: 60px;
-  }
-  .voucher_footer {
-    position: relative;
+
+  /* 表格结束文字 */
+  .table-footer {
+    display: flex;
     height: 60px;
+    width: 100%;
   }
+  .voucher_bookkeeper {
+    flex: 1;
+    margin-left: 20px;
+    margin-top: 10px;
+    display: inline-block;
+    /* line-height: 60px; */
+  }
+  .voucher_header_number {
+    flex: 1;
+    /* right: 10px; */
+    margin-top: 10px;
+    /* margin-right: 30px; */
+    display: inline-block;
+    text-align: right;
+  }
+  /* .voucher_footer {
+    margin-left: 40px;
+    margin-top: 10px;
+  } */
+  /* 表尾样式 */
   tfoot {
     background-color: aliceblue;
   }

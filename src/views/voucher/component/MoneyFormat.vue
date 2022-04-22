@@ -1,5 +1,5 @@
 <template>
-  <tr v-if="nonConcat">
+  <tr v-if="nonConcat" class="unit">
     <td
       @click="concatUnit"
       contenteditable="true"
@@ -14,7 +14,7 @@
       <input
         type="text"
         maxlength="13"
-        style="height: 100%; width: 192px"
+        style="height: 40px; width: 192px"
         @keyup.enter="splitNum"
         v-model="num1"
         name=""

@@ -6,7 +6,7 @@
     title="Modal Title"
     :helpMessage="['提示1', '提示2']"
     @visible-change="handleShow"
-    width="700px"
+    width="900px"
   >
     <template v-if="!loading">
       <About />
