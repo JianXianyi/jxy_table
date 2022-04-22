@@ -1,11 +1,6 @@
 <template>
   <tr v-if="nonConcat" class="unit">
-    <td
-      @click="concatUnit"
-      contenteditable="true"
-      v-for="(num, index) in numberData"
-      :key="index + num"
-    >
+    <td @click="concatUnit" v-for="(num, index) in numberData" :key="index + num">
       {{ num }}
     </td>
   </tr>
