@@ -22,8 +22,8 @@
       <table class="voucher_table">
         <thead>
           <tr>
-            <td style="width: 20px">序号</td>
-            <td style="width: 300px" class="voucher_summary">摘要</td>
+            <td style="width: 20px">行次</td>
+            <td style="width: 100px" class="voucher_summary">摘要</td>
             <td style="width: 300px" class="voucher_subject">会计科目</td>
             <td class="voucher_price_01" style="height: 100%; width: 192px">
               <tr>
@@ -67,19 +67,19 @@
         </thead>
         <tbody>
           <tr ref="tr" class="voucher_item" v-for="(item, index) in voucher.items" :key="item.id">
-            <td>{{ index + 1 }}</td>
+            <td class="voucher_index">{{ index + 1 }}</td>
             <td
               class="voucher_summary_val tab-value"
               contenteditable="true"
               ref="summart"
               @keyup.enter="saveSummart(index)"
             >
-              <input
-                style="width: 100%; height: 40px"
+              <textarea
+                style="width: 100%; height: 58px"
                 type="text"
-                multiple="multiple"
+                multiple
                 v-model="voucherData.items[index].summart"
-              />
+              ></textarea>
             </td>
             <td class="voucher_subject_val tab-value">
               <input
@@ -111,14 +111,14 @@
         <tfoot>
           <tr>
             <td class="voucher_sum" colspan="3">合计：{{ AllTotal }}</td>
-            <td>
+            <td class="voucher_sum_unit">
               <tr class="unit">
                 <td v-for="(num, index) in debiteTotal" :key="index + num">
                   {{ num }}
                 </td>
               </tr>
             </td>
-            <td
+            <td class="voucher_sum_unit"
               ><tr class="unit">
                 <td v-for="(num, index) in creditTotal" :key="index + num">
                   {{ num }}
@@ -219,7 +219,7 @@
           header: ' 生成凭证 ',
           targetStyle: ['*'],
           targetStyles: ['*'],
-          style: '@page {size:small ;margin:0 5mm}',
+          style: '@page {size:small ;margin:8mm 5mm}',
         });
       },
       Changesubject(e, index) {
@@ -241,9 +241,9 @@
         console.log(this.voucherData);
         // console.log(...[...this.$refs.summart].forEach((item) => console.log(item.innerText)));
       },
-      saveSummart(index) {
-        console.log(index);
-      },
+      // saveSummart(index) {
+      //   console.log(index);
+      // },
     },
   };
 </script>
@@ -258,22 +258,22 @@
     align-items: center;
     background-color: #fff;
   }
-  .voucher_table {
-    text-align: center;
-    /* margin: auto;
-    overflow: auto; */
-  }
   .voucher_header {
     width: 100%;
     display: flex;
     position: relative;
-    /* justify-content: space-between; */
   }
   thead {
+    text-align: center;
     color: steelblue;
     font-weight: bold;
 
     background-color: aliceblue;
+  }
+  thead .unit td {
+    flex: 1;
+    width: 15px;
+    height: 30px;
   }
   .voucher_header_title {
     margin-top: 10px;
@@ -294,10 +294,13 @@
     top: 10px;
     right: 10px;
   }
+  .voucher_index {
+    text-align: center;
+  }
   /* 科目下拉框样式 */
   #subject_inp {
     width: 100%;
-    height: 40px;
+    height: 58px;
   }
   /* 金额单元格样式 */
   .unit {
@@ -306,8 +309,8 @@
   .unit td {
     flex: 1;
     width: 15px;
-    padding-top: 8px;
-    height: 40px;
+    padding-top: 5px;
+    height: 62px;
   }
 
   /* 输入框组样式 */
@@ -329,12 +332,13 @@
 
   /* 合计样式 */
   .voucher_sum {
-    /* height: 50px; */
+    font-size: 14px;
+    text-indent: 10px;
   }
-
-  /* .voucher_price_01 {
-    width: 192px;
-  } */
+  .voucher_sum_unit .unit td {
+    text-align: right;
+    padding-top: 20px;
+  }
   .voucher_summary,
   .voucher_subject,
   .voucher_title,
@@ -373,11 +377,6 @@
     display: inline-block;
     text-align: right;
   }
-  /* .voucher_footer {
-    margin-left: 40px;
-    margin-top: 10px;
-  } */
-  /* 表尾样式 */
   tfoot {
     background-color: aliceblue;
     color: steelblue;

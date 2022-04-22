@@ -9,7 +9,7 @@
       <input
         type="text"
         maxlength="13"
-        style="height: 37px; width: 192px"
+        style="height: 58px; width: 192px"
         @keyup.enter="splitNum"
         v-model="num1"
         name=""
@@ -63,7 +63,13 @@
 <style scoped>
   .a-click {
     position: absolute;
-    top: 10px;
+    top: 20px;
     right: 5px;
+  }
+  .unit {
+    text-align: right;
+  }
+  .unit td {
+    padding-top: 18px;
   }
 </style>
