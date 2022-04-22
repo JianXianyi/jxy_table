@@ -15,7 +15,7 @@
         type="text"
         maxlength="13"
         style="height: 100%; width: 192px"
-        @keyup.enter="concatUnit"
+        @keyup.enter="splitNum"
         v-model="num1"
         name=""
         id=""
@@ -38,6 +38,9 @@
           return 0;
         },
       },
+      rowIndex: {
+        type: Number,
+      },
     },
     data() {
       return {
@@ -52,6 +55,7 @@
         this.nonConcat = !this.nonConcat;
       },
       splitNum() {
+        this.$emit('modified', Number(this.num1), this.rowIndex);
         this.numberData = Utils.zero(
           Utils.dotClear(Number(this.num1).toFixed(2).toString()).split(''),
         );
